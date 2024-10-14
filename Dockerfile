@@ -1,4 +1,4 @@
-FROM node:alpine3.17
+FROM node:20-alpine3.20
 WORKDIR /app
 
 RUN apk update && apk add git   
@@ -8,4 +8,5 @@ RUN pnpm install
 
 EXPOSE 3000
 
+USER node #run as non-root user
 CMD ["pnpm", "start"]
