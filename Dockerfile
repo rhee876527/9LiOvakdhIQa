@@ -8,5 +8,6 @@ RUN pnpm install
 
 EXPOSE 3000
 
-USER node #run as non-root user
+#run as non-root user
+USER node 
 CMD ["pnpm", "start"]
