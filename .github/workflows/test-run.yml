@@ -1,0 +1,36 @@
+name: Docker App CI
+
+on:
+  push:
+    branches:
+      - main
+#  pull_request:
+#    branches:
+#      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v6
+
+    - name: Build Docker image
+      run: docker build -t testbuild .
+
+    - name: Run Docker container
+      run: docker run -d --name test testbuild 
+
+    - name: Wait for the service to start
+      run: sleep 5  
+
+    - name: Test /api/v1 for success
+      run: |
+        docker exec test wget -qO- http://localhost:3000/api/v1 | grep '"success"'
+      
+    - name: Stop and clean up
+      run: docker stop test && docker rm test
