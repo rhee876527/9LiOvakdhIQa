@@ -9,5 +9,6 @@ RUN pnpm install
 EXPOSE 3000
 
 #run as non-root user
+RUN chown -R node /app/public
 USER node 
 CMD ["pnpm", "start"]
