@@ -13,6 +13,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up git config
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Get the latest commit from quetre repository
         run: |
           latest_commit=$(curl -s https://api.github.com/repos/zyachel/quetre/branches/main | jq -r '.commit.sha')
