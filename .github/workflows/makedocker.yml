@@ -37,7 +37,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: /dev/null # we are not copying any files from this repo
+ #         context: . # we are not copying any files from this repo
           dockerfile: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/${{ env.PACKAGE_NAME }}
