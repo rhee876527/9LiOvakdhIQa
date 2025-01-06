@@ -22,7 +22,7 @@ jobs:
 
       - name: Get the latest commit from quetre repository
         run: |
-          latest_commit=$(curl -s https://api.github.com/repos/zyachel/quetre/branches/main | jq -r '.commit.sha')
+          latest_commit=$(curl -s https://github.com/zyachel/quetre/commits/main | grep -oP '(?<=href="/zyachel/quetre/commit/)[a-f0-9]{40}' | head -n 1)
           echo "Latest commit: $latest_commit"
           echo "::set-output name=latest_commit::$latest_commit"
         id: get_commit
@@ -41,6 +41,8 @@ jobs:
       - name: Update commit if there is a newer version
         if: steps.check_commit.outputs.stored_commit != steps.get_commit.outputs.latest_commit
         run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
           echo "${{ steps.get_commit.outputs.latest_commit }}" > latest_commit.txt
           git add latest_commit.txt
           git commit -m "Update latest commit to ${{ steps.get_commit.outputs.latest_commit }}"
