@@ -19,7 +19,7 @@ jobs:
         run: |
           latest_commit=$(curl -s https://github.com/zyachel/quetre/commits/main | grep -oP '(?<=href="/zyachel/quetre/commit/)[a-f0-9]{40}' | head -n 1)
           echo "Latest commit: $latest_commit"
-          echo "::set-output name=latest_commit::$latest_commit"
+          echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
         id: get_commit
 
       - name: Check the current commit in the file
@@ -31,14 +31,14 @@ jobs:
           else
             stored_commit=""
           fi
-          echo "::set-output name=stored_commit::$stored_commit"
+          echo "STORED_COMMIT=$stored_commit" >> $GITHUB_ENV
 
       - name: Update commit if there is a newer version
-        if: steps.check_commit.outputs.stored_commit != steps.get_commit.outputs.latest_commit
+        if: env.STORED_COMMIT != env.LATEST_COMMIT
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          echo "${{ steps.get_commit.outputs.latest_commit }}" > latest_commit.txt
+          echo "$LATEST_COMMIT" > latest_commit.txt
           git add latest_commit.txt
           git commit -m "Update latest commit to ${{ steps.get_commit.outputs.latest_commit }}"
           git push
@@ -46,5 +46,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: No update needed
-        if: steps.check_commit.outputs.stored_commit == steps.get_commit.outputs.latest_commit
+        if: env.STORED_COMMIT == env.LATEST_COMMIT
         run: echo "No new commits. Nothing to update."
