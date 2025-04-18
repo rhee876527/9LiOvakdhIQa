@@ -17,7 +17,7 @@ jobs:
 
       - name: Get the latest commit from quetre repository
         run: |
-          latest_commit=$(curl -s https://github.com/zyachel/quetre/commits/main | grep -oP '(?<=href="/zyachel/quetre/commit/)[a-f0-9]{40}' | head -n 1)
+          latest_commit=$(curl -s --retry 5 --retry-delay 10 --retry-max-time 60 https://github.com/zyachel/quetre/commits/main | grep -oP '(?<=href="/zyachel/quetre/commit/)[a-f0-9]{40}' | head -n 1)
           echo "Latest commit: $latest_commit"
           echo "LATEST_COMMIT=$latest_commit" >> $GITHUB_ENV
         id: get_commit
@@ -40,7 +40,7 @@ jobs:
           git config --global user.email "action@github.com"
           echo "$LATEST_COMMIT" > latest_commit.txt
           git add latest_commit.txt
-          git commit -m "Update latest commit to ${{ steps.get_commit.outputs.latest_commit }}"
+          git commit -m "Update latest commit to ${{ env.LATEST_COMMIT }}"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
